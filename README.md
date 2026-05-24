@@ -31,16 +31,23 @@ A lightweight, fast, and minimal Rust-based utility for managing WireGuard VPNs 
 ### 1. Clone and build
 
 ```bash
-git clone https://github.com/yourusername/wg-waybar-toggle
-cd wg-waybar-toggle
+git clone https://github.com/codemonkey76/wg-toggle
+cd wg-toggle
 cargo build --release
 ```
 
-### 2. Move binary to somehwere in your `$PATH`:
+### 2. Copy binary to somehwere in your `$PATH`:
 
 ```bash
-cp target/release/wg-toggle ~/.local/vin/
+cp target/release/wg-toggle ~/.local/bin/
 ```
+
+### Using cargo
+```bash
+cargo install wg-toggle
+```
+
+> In this case, the binary is stored in `~/.cargo/bin/`. So be sure to point the module to `~/.cargo/bin/wg-toggle`.
 
 ## 🖼️ Waybar Integration
 
@@ -48,26 +55,31 @@ cp target/release/wg-toggle ~/.local/vin/
 
 ```json
 "custom/wg": {
-  "exec": "~/.local/bin/wg-toggle --status",
+  "exec": "$HOME/.cargo/bin/wg-toggle --status",
   "return-type": "json",
-  "interval": 10,
-  "on-click": "~/.local/bin/wg-toggle",
-  "on-click-right": "~/.local/bin/wg-toggle next",
-  "on-scroll-up": "~/.local/bin/wg-toggle previous",
-  "on-scroll-down": "~/.local/bin/wg-toggle next",
-  "tooltip": true
-}
+  "interval": 5,
+  "on-click": "$HOME/.cargo/bin/wg-toggle",
+  "on-click-right": "$HOME/.cargo/bin/wg-toggle next",
+  "on-scroll-up": "$HOME/.cargo/bin/wg-toggle previous",
+  "on-scroll-down": "$HOME/.cargo/bin/wg-toggle next",
+  "format": "{icon}",
+  "format-icons": {
+	   "disconnected": " ",
+	   "connected": " "
+  },
+  "tooltip-format": "{} - {alt}"
+},
 ```
 
 ### Example CSS:
 
 ```css
-#custom-wg.active {
+#custom-wg.connected {
   background-color: #a6e3a1;
   color: #1e1e2e;
 }
 
-#custom-wg.inactive {
+#custom-wg.disconnected {
   background-color: #45475a;
   color: #cdd6f4;
 }
