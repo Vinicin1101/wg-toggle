@@ -59,25 +59,28 @@ fn is_active(conn: &str) -> bool {
 }
 
 fn toggle_connection(conn: &str) {
-    if is_active(conn) {
-        let _ = Command::new("nmcli")
-            .args(["connection", "down", conn])
-            .output();
-        println!("{{\"text\": \"{}\", \"class\": \"inactive\"}}", conn);
-    } else {
-        let _ = Command::new("nmcli")
-            .args(["connection", "up", conn])
-            .output();
-        println!("{{\"text\": \"{}\", \"class\": \"active\"}}", conn);
+    let mut action = "down";
+    if !is_active(conn) {
+        action = "up"
     }
+
+    let _ = Command::new("nmcli")
+        .args(["connection", action, conn])
+        .output();
+
+    status_output(conn);
 }
 
 fn status_output(conn: &str) {
+    let mut status = "disconnected";
     if is_active(conn) {
-        println!("{{\"text\": \"🛡️  {}\", \"class\": \"active\"}}", conn);
-    } else {
-        println!("{{\"text\": \"🚫  {}\", \"class\": \"inactive\"}}", conn);
+        status = "connected"
     }
+
+    println!(
+        "{{\"text\": \"{}\", \"class\": \"{}\", \"alt\": \"{}\"}}",
+        conn, status, status
+    );
 }
 
 fn main() {
@@ -85,7 +88,7 @@ fn main() {
     let conn_list = get_wireguard_connections().unwrap_or_else(|_| vec![]);
 
     if conn_list.is_empty() {
-        println!("{{\"text\": \"No VPNs\", \"class\": \"inactive\"}}");
+        println!("{{\"text\": \"No VPNs\", \"alt\": \"disconnected\", \"class\": \"inactive\"}}");
         return;
     }
 
